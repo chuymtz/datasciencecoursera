@@ -169,7 +169,7 @@ names(df) <- gsub('anglezgravitymean', 'anglegravitymeanz', names(df))
 ```
 
 Let us preview the first and last few variables names:
-```{r, cache=TRUE}
+```{r preview, cache=TRUE}
 head(names(df))
 tail(names(df))
 ```
