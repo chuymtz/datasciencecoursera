@@ -1,0 +1,197 @@
+---
+title: "Getting and Cleaning Data Course Project"
+author: "chuymtz"
+date: "27 de junio de 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Instructions
+
+The purpose of this project is to demonstrate your ability to collect, work with, and clean a data set.
+
+### Review criteria 
+
+1. The submitted data set is tidy.
+2. The Github repo contains the required scripts.
+3. GitHub contains a code book that modifies and updates the available codebooks with the data to indicate all the variables and summaries calculated, along with units, and any other relevant information.
+4. The README that explains the analysis files is clear and understandable.
+5. The work submitted for this project is the work of the student who submitted it.
+
+### Description of the problem
+
+The purpose of this project is to demonstrate your ability to collect, work with, and clean a data set. The goal is to prepare tidy data that can be used 
+for later analysis. You will be graded by your peers on a series of yes/no 
+questions related to the project. You will be required to submit: 
+
+1. a tidy data set as described below, 
+2. a link to a Github repository with your script for performing the analysis, and 
+3. a code book that describes the variables, the data, and any  transformations or work that you performed to clean up the data  called CodeBook.md. 
+        
+You should also include a README.md in the repo with your scripts. This repo  explains how all of the scripts work and how they are connected.
+
+One of the most exciting areas in all of data science right now is wearable 
+computing - see for example this article . Companies like Fitbit, Nike, and 
+Jawbone Up are racing to develop the most advanced algorithms to attract new 
+users. The data linked to from the course website represent data collected 
+from the accelerometers from the Samsung Galaxy S smartphone. A full 
+description is available at the site where the data was obtained:
+    
+<http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones>
+
+Here are the data for the project:
+    
+<https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip>
+
+You should create one R script called run_analysis.R that does the following.
+
+1. Merges the training and the test sets to create one data set.
+2. Extracts only the measurements on the mean and standard deviation for each measurement.
+3. Uses descriptive activity names to name the activities in the data set
+4. Appropriately labels the data set with descriptive variable names.
+5. From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
+
+******
+
+### Getting the data
+
+Load the `dplyr` package.
+```{r message=FALSE}
+library(dplyr)
+```
+
+Download the data.
+```{r, cache=TRUE}
+fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
+download.file(fileUrl, destfile = './data.zip')
+unzip('./data.zip')
+```
+
+Refer to `README.txt` for a detailed description of the data.
+The folder `UCI HAR Dataset` contains the *test* and *train* data. 
+
+Create a `dplyr` data frame for each subject id in test and train sample.
+```{r, cache=TRUE}
+subject_test <- tbl_df(read.table('./UCI HAR Dataset/test/subject_test.txt'))
+subject_train <- tbl_df(read.table('./UCI HAR Dataset/train/subject_train.txt'))
+```
+
+Create a `dplyr` data frame for each features data in test and train sample.
+```{r, cache=TRUE}
+data_test <- tbl_df(read.table('./UCI HAR Dataset/test/X_test.txt'))
+data_train <- tbl_df(read.table('./UCI HAR Dataset/train/X_train.txt'))
+```
+
+Create a `dplyr` data frame for each activity in test and train sample.
+```{r, cache=TRUE}
+activity_test <- tbl_df(read.table('./UCI HAR Dataset/test/Y_test.txt'))
+activity_train <- tbl_df(read.table('./UCI HAR Dataset/train/Y_train.txt'))
+```
+
+Merge subject, activity and data set for train and test data. This creates three `dplyr` data frames.
+```{r, cache=TRUE}
+subjects <- rbind(subject_train, subject_test)
+activity <- rbind(activity_train, activity_test) 
+data <- rbind(data_train, data_test)
+```
+
+For convenience, properly name columns for features in 'data' data frame. 
+First load the features data and activity _names_ from the `features.txt` and `activity_labels.txt` files. 
+```{r, cache=TRUE}
+features <- read.table('./UCI HAR Dataset/features.txt')
+labels <- read.table('./UCI HAR Dataset/activity_labels.txt')
+```
+Use the `rename` function to rename the variables names of the `subjects` and `activity` data frames defined above.
+```{r, cache=TRUE}
+subjects <- rename(subjects, subject = V1)
+activity <- rename(activity, activity_num = V1)
+colnames(data) <- features$V2
+```
+
+Merges the training and the test sets to create one data set named `df`.
+```{r, cache=TRUE}
+df <- tbl_df(cbind(subjects, activity, data))
+```
+Preview the _untidy_ data frame.
+```{r, cache=TRUE}
+df[1:10, 1:4]
+```
+### Tidy the data
+
+Extract mean and standard deviation measurements. Use the `grep` function to search for the words _mean_ and _standard deviation_ in the features columns of `df`.
+```{r, cache=TRUE}
+mean_std_features <- grep(".[Mm]ean.|.[Ss]td.",names(df))
+df<- subset(df,select=c(1,2,mean_std_features))
+```
+Preview the names of the first few features:
+```{r, cache=TRUE}
+head(names(df), n=20L)
+```
+
+Use descriptive activity names for activity data frame. This requires to merge the `df` data frame and the `labels` data frame by the *activity number*. 
+```{r, cache=TRUE}
+names(labels) <- c('activity_num', 'activity')
+df <- merge(labels, df , by='activity_num', all=TRUE); rm(labels)
+```
+A new column is created. We only need the column with the activity label and not the activity number. 
+Use the functions `select` and `arange`
+
+Rearragnge columns to show subject first and activity second.
+```{r, cache=TRUE}
+df <- df %>%
+    select(3, 2, 4:89) %>%
+    arrange(subject)
+```
+
+Use descriptive names for mean and standard devaition features.
+According to the lectures, good habits include:
+
+*   All lower case when possible.
+*   Descriptive (_Diagnosis_ versus _Dx_).
+*   Not duplicated.
+*   Not have underscores or dots or white spaces.
+*   Variables with chacacter values should be made into factor variables (depending on context).
+
+```{r, cache=TRUE}
+names(df) <- tolower(names(df))
+names(df) <- gsub('acc', 'acceleration', names(df))
+names(df) <- gsub('gyro', 'angularvelocity', names(df))
+names(df) <- gsub('mag', 'magnitude', names(df))
+names(df) <- gsub('bodybody', 'body', names(df))
+names(df) <- gsub('freq', 'frequency', names(df))
+names(df) <- gsub('anglet', 'angletime', names(df))
+names(df) <- gsub('meangravity', 'gravity', names(df))
+names(df) <- gsub('^t|\\(t', 'time', names(df))
+names(df) <- gsub('^f', 'frequency', names(df))
+names(df) <- gsub('-|\\(|\\)|,', '', names(df))
+names(df) <- gsub('anglexgravitymean', 'anglegravitymeanx', names(df))
+names(df) <- gsub('angleygravitymean', 'anglegravitymeany', names(df))
+names(df) <- gsub('anglezgravitymean', 'anglegravitymeanz', names(df))
+```
+
+Let us preview the first and last few variables names:
+```{r, cache=TRUE}
+head(names(df))
+tail(names(df))
+```
+The _tidied_ data is now:
+```{r, cache=TRUE}
+df[1:10, 1:4]
+```
+The structured of our _tidied_ data is:
+```{r, cache=TRUE}
+str(df)
+```
+_I believe a possible improvement would be to group the data so that we have columns denoting, the subject, the activity, the time domain, frequency and angle gravity._
+
+### Second tidy data
+
+From the data set `df`, create a second, independent tidy data set with the average of each variable for each activity and each subject.
+For this, we use the `aggregate` function and arrange according to subject and activity with `arrange`.
+```{r, cache=TRUE}
+tidySet <- aggregate(.~subject + activity, df, mean)
+tidySet <- tidySet %>% arrange(subject, activity)
+```
