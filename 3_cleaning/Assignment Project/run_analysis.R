@@ -68,4 +68,4 @@ tidySet <- aggregate(.~subject + activity, df, mean)
 tidySet <- tidySet %>% arrange(subject, activity)
 
 # Produce output and upload file.
-write.table(df, file='tidydata.txt', row.name = FALSE)
+write.table(tidySet, file='tidydata.txt', row.name = FALSE)
