@@ -188,8 +188,10 @@ _I believe a possible improvement would be to group the data so that we have col
 ### Second tidy data
 
 From the data set `df`, create a second, independent tidy data set with the average of each variable for each activity and each subject.
-For this, we use the `aggregate` function and arrange according to subject and activity with `arrange`.
+For this, we use the `group_by` and `summarise_each` functions and arrange according to subject and activity with `arrange`.
 ```{r, cache=TRUE}
-tidySet <- aggregate(.~subject + activity, df, mean)
-tidySet <- tidySet %>% arrange(subject, activity)
+tidySet <- df %>% 
+    group_by(subject, activity) %>% 
+    summarise_each(funs(mean)) %>%
+    arrange(subject, activity)
 ```
