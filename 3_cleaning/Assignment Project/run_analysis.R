@@ -66,3 +66,6 @@ names(df) <- gsub('anglezgravitymean', 'anglegravitymeanz', names(df))
 # and each subject.
 tidySet <- aggregate(.~subject + activity, df, mean)
 tidySet <- tidySet %>% arrange(subject, activity)
+
+# Produce output and upload file.
+write.table(df, file='tidydata.txt', row.name = FALSE)
