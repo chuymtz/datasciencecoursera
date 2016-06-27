@@ -1,15 +1,8 @@
----
-title: "Getting and Cleaning Data Course Project"
-author: "chuymtz"
-date: "27 de junio de 2016"
-output: html_document
----
+# Getting and Cleaning Data Course Project
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+******
 
-# Instructions
+## Instructions
 
 The purpose of this project is to demonstrate your ability to collect, work with, and clean a data set.
 
@@ -119,6 +112,9 @@ Preview the _untidy_ data frame.
 ```{r, cache=TRUE}
 df[1:10, 1:4]
 ```
+
+******
+
 ### Tidy the data
 
 Extract mean and standard deviation measurements. Use the `grep` function to search for the words _mean_ and _standard deviation_ in the features columns of `df`.
@@ -186,6 +182,8 @@ The structured of our _tidied_ data is:
 str(df)
 ```
 _I believe a possible improvement would be to group the data so that we have columns denoting, the subject, the activity, the time domain, frequency and angle gravity._
+
+******
 
 ### Second tidy data
 

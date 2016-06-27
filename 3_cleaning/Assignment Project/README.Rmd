@@ -1,12 +1,11 @@
----
-title: "Getting and Cleaning Data Course: README.Rmd"
----
+# Getting and Cleaning Data Course: README.Rmd
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+******
+******
 
 The purpose of this project is to demonstrate your ability to collect, work with, and clean a data set.
+
+******
 
 ### Problem description
 
@@ -16,7 +15,7 @@ Companies like Fitbit, Nike, and Jawbone Up are racing to develop the most advan
 The data linked to from the course website represent data collected from the accelerometers from the Samsung Galaxy S smartphone. 
 
 The experiments have been carried out with a group of 30 volunteers within an age bracket of 19-48 years. 
-Each person performed six activities (WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING) wearing a smartphone (Samsung Galaxy S II) on the waist. 
+Each person performed six activities (WALKING, WALKING UPSTAIRS, WALKING DOWNSTAIRS, SITTING, STANDING, LAYING) wearing a smartphone (Samsung Galaxy S II) on the waist. 
 Using its embedded accelerometer and gyroscope, we captured 3-axial linear acceleration and 3-axial angular velocity at a constant rate of 50Hz. 
 The experiments have been video-recorded to label the data manually. 
 The obtained dataset has been randomly partitioned into two sets, where 70% of the volunteers was selected for generating the training data and 30% the test data.
@@ -50,6 +49,8 @@ Here are the data for the project:
     
 <https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip>
 
+******
+
 ### Run analysis
 
 The file `run_analysis.R` performs the following operations:
@@ -59,6 +60,8 @@ The file `run_analysis.R` performs the following operations:
 3. Extracts only the measurements on the mean and standard deviation for each measuresment.
 4. Lables appropiately labels the data with descriptive names.
 5. Creates a second, independent tidy data set with the average of each variable for each activity and each subject.
+
+******
 
 ### CodeBook
 
